@@ -86,22 +86,23 @@ class instance_custom_training:
         
         labelme_train_folder = os.path.abspath(os.path.join(dataset, "train"))
         labelme_test_folder = os.path.abspath(os.path.join(dataset, "test"))
-        export_dir = os.path.abspath(dataset)
+        export_train = os.path.abspath(os.path.join(labelme_train_folder, "train.json"))
+        export_test = os.path.abspath(os.path.join(labelme_test_folder, "test.json"))
         
         train_coco = get_coco_from_labelme_folder(labelme_train_folder)
-        save_json(train_coco.json, export_dir+"train.json")
+        save_json(train_coco.json, export_train)
         
         # Training dataset.
         self.dataset_train = Data()
-        self.dataset_train.load_data(export_dir+"train.json", labelme_train_folder)
+        self.dataset_train.load_data(export_train, labelme_train_folder)
         self.dataset_train.prepare()
 
         val_coco = get_coco_from_labelme_folder(labelme_test_folder, coco_category_list=train_coco.json_categories)
-        save_json(val_coco.json, export_dir+"test.json")
+        save_json(val_coco.json, export_test)
 
         # Test dataset.
         self.dataset_test = Data()
-        self.dataset_test.load_data(export_dir+"test.json", labelme_test_folder)
+        self.dataset_test.load_data(export_test, labelme_test_folder)
         self.dataset_test.prepare()
 
     def visualize_sample(self):
