@@ -86,19 +86,23 @@ class instance_custom_training:
         
         labelme_train_folder = os.path.abspath(os.path.join(dataset, "train"))
         labelme_test_folder = os.path.abspath(os.path.join(dataset, "test"))
-        export_train = os.path.abspath(os.path.join(labelme_train_folder, "train.json"))
-        export_test = os.path.abspath(os.path.join(labelme_test_folder, "test.json"))
+        export_train = os.path.join(labelme_train_folder, "train.json")
+        export_test = os.path.join(labelme_train_folder, "val.json")
+        print(labelme_train_folder)
+        print(labelme_test_folder)
+        print(export_train)
+        print(export_test)
         
-        train_coco = get_coco_from_labelme_folder(labelme_train_folder)
-        save_json(train_coco.json, export_train)
+        # train_coco = get_coco_from_labelme_folder(labelme_train_folder)
+        # save_json(train_coco.json, export_train)
         
         # Training dataset.
         self.dataset_train = Data()
         self.dataset_train.load_data(export_train, labelme_train_folder)
         self.dataset_train.prepare()
 
-        val_coco = get_coco_from_labelme_folder(labelme_test_folder, coco_category_list=train_coco.json_categories)
-        save_json(val_coco.json, export_test)
+        # val_coco = get_coco_from_labelme_folder(labelme_test_folder, coco_category_list=train_coco.json_categories)
+        # save_json(val_coco.json, export_test)
 
         # Test dataset.
         self.dataset_test = Data()
