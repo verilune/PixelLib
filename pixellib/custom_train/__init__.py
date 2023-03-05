@@ -29,6 +29,7 @@ import labelme2coco
 from pixellib.instance.config import Config
 from pixellib.instance.mask_rcnn import log
 import colorsys
+from labelme2coco import get_coco_from_labelme_folder, save_json
 
 
 
@@ -55,34 +56,53 @@ class instance_custom_training:
     
     
     def load_dataset(self, dataset):
-        labelme_folder1 = os.path.abspath(os.path.join(dataset, "train"))
+        # labelme_folder1 = os.path.abspath(os.path.join(dataset, "train"))
 
-        #dir where the converted json files will be saved
-        save_json_path1 = os.path.abspath(os.path.join(dataset, "train.json"))
+        # #dir where the converted json files will be saved
+        # save_json_path1 = os.path.abspath(os.path.join(dataset, "train.json"))
         
-        #conversion of individual labelme json files into a single json file        
-        labelme2coco.convert(labelme_folder1, save_json_path1)
+        # #conversion of individual labelme json files into a single json file        
+        # labelme2coco.convert(labelme_folder1, save_json_path1)
+        
+        # # Training dataset.
+        # self.dataset_train = Data()
+        # self.dataset_train.load_data(save_json_path1, labelme_folder1)
+        # self.dataset_train.prepare()
+        
+        
+        # labelme_folder2 = os.path.abspath(os.path.join(dataset, "test"))
+
+        # #dir where the converted json files will be saved
+        # save_json_path2 = os.path.abspath(os.path.join(dataset, "test.json"))
+        
+        
+        # #conversion of individual labelme json files into a single json file  
+        # labelme2coco.convert(labelme_folder2, save_json_path2)
+        
+        # # Training dataset.
+        # self.dataset_test = Data()
+        # self.dataset_test.load_data(save_json_path2, labelme_folder2)
+        # self.dataset_test.prepare()
+        
+        labelme_train_folder = os.path.abspath(os.path.join(dataset, "train"))
+        labelme_test_folder = os.path.abspath(os.path.join(dataset, "test"))
+        export_dir = os.path.abspath(dataset)
+        
+        train_coco = get_coco_from_labelme_folder(labelme_train_folder)
+        save_json(train_coco.json, export_dir+"train.json")
         
         # Training dataset.
         self.dataset_train = Data()
-        self.dataset_train.load_data(save_json_path1, labelme_folder1)
+        self.dataset_train.load_data(export_dir+"train.json", labelme_train_folder)
         self.dataset_train.prepare()
-        
-        
-        labelme_folder2 = os.path.abspath(os.path.join(dataset, "test"))
 
-        #dir where the converted json files will be saved
-        save_json_path2 = os.path.abspath(os.path.join(dataset, "test.json"))
-        
-        
-        #conversion of individual labelme json files into a single json file  
-        labelme2coco.convert(labelme_folder2, save_json_path2)
-        
-        # Training dataset.
+        val_coco = get_coco_from_labelme_folder(labelme_test_folder, coco_category_list=train_coco.json_categories)
+        save_json(val_coco.json, export_dir+"test.json")
+
+        # Test dataset.
         self.dataset_test = Data()
-        self.dataset_test.load_data(save_json_path2, labelme_folder2)
+        self.dataset_test.load_data(export_dir+"test.json", labelme_test_folder)
         self.dataset_test.prepare()
-    
 
     def visualize_sample(self):
         image_id = np.random.choice(self.dataset_train.image_ids)
